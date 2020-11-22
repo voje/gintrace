@@ -25,7 +25,10 @@ func (mr *myResponseWriter) Write(respBody []byte) (int, error) {
 
 // BodyLogger logs both request and response body
 func BodyLogger(c *gin.Context) {
-	body, _ := c.GetRawData()
+	body, err := c.GetRawData()
+	if err != nil {
+		log.Error(err)
+	}
 	log.Tracef("RequestBody: %s\n", string(body))
 
 	// We also want to catch response (it gets sent off during the next handler)

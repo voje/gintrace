@@ -13,41 +13,38 @@ import (
 
 func TestGet(t *testing.T) {
 	router := gin.New()
-	router.GET("/test1", func(c *gin.Context) {
-		c.String(200, "test1r")
+	router.GET("/get123", func(c *gin.Context) {
+		c.String(http.StatusOK, "get response")
 	})
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test1", nil)
+	req, _ := http.NewRequest("GET", "/get123", nil)
 
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, "test1r", w.Body.String())
+	assert.Equal(t, "get response", w.Body.String())
 }
+
 func TestPost(t *testing.T) {
+	requestBody := []byte("{'requestKey':'requestVal'}")
+	responseBody := []byte("{'responseKey':'requestVal'}")
+
 	router := gin.New()
-	router.POST("/test1", func(c *gin.Context) {
-		retJSON := struct {
-			a int
-			b string
-		}{
-			42,
-			"test",
-		}
-		c.JSON(200, retJSON)
+
+	router.POST("/post123", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    http.StatusOK,
+			"message": string(responseBody),
+		})
 	})
 
 	w := httptest.NewRecorder()
-	reqJSON := struct {
-		a int
-	}{
-		1,
-	}
-	jsonBytes, _ := json.Marshal(reqJSON)
-	br := bytes.NewBuffer(jsonBytes)
-	req, _ := http.NewRequest("POST", "/test1", br)
+
+	req, _ := http.NewRequest("POST", "/post123", bytes.NewBuffer(requestBody))
 
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, "test1rrr", w.Body.String())
+	var body map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &body)
+	assert.Equal(t, string(responseBody), body["message"])
 }

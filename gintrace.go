@@ -2,6 +2,7 @@ package gintrace
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -29,7 +30,7 @@ func BodyLogger(c *gin.Context) {
 	if err != nil {
 		log.Error(err)
 	}
-	log.Tracef("RequestBody: %s\n", string(body))
+	fmt.Printf("RequestBody: %s\n", string(body))
 
 	// We also want to catch response (it gets sent off during the next handler)
 	// We can implement our own c.Writer that saves the response before sending it off
@@ -43,5 +44,5 @@ func BodyLogger(c *gin.Context) {
 	c.Next()
 
 	// Log the stored response
-	log.Tracef("ResponseBody: %s\n", w.body.String())
+	fmt.Printf("ResponseBody: %s\n", w.body.String())
 }
